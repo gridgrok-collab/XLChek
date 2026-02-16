@@ -1,0 +1,181 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>XLChek Report - $WORKBOOK</title>
+  <style>$CSS</style>
+</head>
+
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="title">XLChek Report</div>
+      <div class="meta">
+        <div><b>Workbook:</b> $WORKBOOK</div>
+        <div><b>Generated:</b> $GENERATED</div>
+        <div class="pill">Offline • Deterministic • Read-only</div>
+      </div>
+      $TRIAL_BANNER
+    </div>
+
+    <div class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid">
+        <div class="card span-4">
+          <div class="label">Workbook risk</div>
+          <div class="value">$WORKBOOK_BADGE</div>
+          <div class="sub">Overall risk assessment based on detected structural patterns.</div>
+        </div>
+
+        <div class="card span-8">
+          <div class="label">Reason</div>
+          <div class="sub" style="font-size:14px; color:#0f172a;">
+            $REASON
+          </div>
+          <div class="sub" style="margin-top:10px;">
+            <b>Signals:</b> circular=$CIRCULAR, volatile=$VOLATILE, symbolic=$SYMBOLIC, hardcoded=$HARDCODED, orphans=$ORPHANS, top_risks=$TOP_RISKS
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Per-Sheet Diagnostics</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sheet</th>
+            <th>Risk</th>
+            <th class="num">Formulas</th>
+            <th class="num">Circular Cells</th>
+            <th class="num">High-Risk Cells</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>$TABLE_SHEETS</tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Key Risk Highlights</h2>
+      <div class="grid">
+        <div class="card span-3">
+          <div class="label">Circular references</div>
+          <div class="value">$CIRCULAR_CYCLES</div>
+          <div class="sub">Cycles in dependency graph can cause instability and incorrect totals.</div>
+        </div>
+        <div class="card span-3">
+          <div class="label">Volatile function hits</div>
+          <div class="value">$VOLATILE_HITS</div>
+          <div class="sub">Volatile formulas recalc often and can hide performance/logic issues.</div>
+        </div>
+        <div class="card span-3">
+          <div class="label">Symbolic references</div>
+          <div class="value">$SYMBOLIC_REFS</div>
+          <div class="sub">Named ranges / structured refs expand dependency surface area.</div>
+        </div>
+        <div class="card span-3">
+          <div class="label">Embedded constants</div>
+          <div class="value">$HARDCODED_CONSTANTS</div>
+          <div class="sub">Numeric literals inside formulas can hide business assumptions (rates, multipliers).</div>
+        </div>
+        <div class="card span-3">
+          <div class="label">Orphan formulas</div>
+          <div class="value">$ORPHAN_FORMULAS</div>
+          <div class="sub">Formulas not referenced by other formulas may indicate dead logic or disconnected models.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Hard-coded Constants (Potential Embedded Assumptions)</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cell</th>
+            <th class="num">Literal</th>
+            <th class="num">Op</th>
+            <th>Function</th>
+            <th>Formula</th>
+          </tr>
+        </thead>
+        <tbody>$TABLE_HARDCODED_CONSTANTS</tbody>
+      </table>
+      <div class="note">These are not automatically "wrong"; they are candidates to move into an Inputs cell for auditability.</div>
+    </div>
+
+    <div class="section">
+      <h2>Orphan Formulas (Disconnected Calculations)</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cell</th>
+            <th>Formula</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>$TABLE_ORPHANS</tbody>
+      </table>
+      <div class="note">Orphans can be intentional (final outputs). Exclude output sheets via config to reduce noise.</div>
+    </div>
+
+    <div class="section">
+      
+      <h2>Copied Formula Drift (Structural Drift)</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>Cell</th><th>Row</th><th>Formula</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            $TABLE_DRIFT
+          </tbody>
+        </table>
+        <div class="note">Heuristic: within a row, if a dominant normalized formula-shape exists, any differing shapes are flagged as drift candidates. Review manually.</div>
+      </div>
+
+<h2>Top High-Risk Cells (Impact Radius)</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cell</th>
+            <th class="num">Downstream Reach</th>
+            <th class="num">Direct Fan-out</th>
+          </tr>
+        </thead>
+        <tbody>$TABLE_TOP_RISKS</tbody>
+      </table>
+      <div class="note">Impact is derived from dependency graph only; values are not recalculated.</div>
+    </div>
+
+    <div class="section">
+      <h2>Circular Reference Details (first 25)</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Cells</th>
+          </tr>
+        </thead>
+        <tbody>$TABLE_CIRCULAR</tbody>
+      </table>
+      <div class="note">Showing up to 25 items for readability (v1).</div>
+    </div>
+     ${ERRORS_BLOCK}  <!-- ✅ Moved inside .container, before footer -->
+    <div class="note" style="text-align:center; color:rgba(255,255,255,0.75);">
+      © XLChek — local report generated offline
+    </div>
+
+  </div>
+
+</body>
+</html>
+        <div class="card span-3">
+          <div class="label">Formula drift</div>
+          <div class="value">$DRIFT_FORMULAS</div>
+          <div class="sub">Cells that break an otherwise consistent copied-formula pattern (row-wise heuristic).</div>
+        </div>
+

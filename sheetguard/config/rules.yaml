@@ -1,0 +1,212 @@
+rules:
+  CIRCULAR_REF:
+    severity: HIGH
+    trust_penalty: 30
+
+  VOLATILE_FUNCTION:
+    severity: MEDIUM
+    trust_penalty: 10
+
+  HARDCODED_CONSTANT:
+    severity: MEDIUM
+    trust_penalty: 15
+
+  FORMULA_DRIFT:
+    severity: MEDIUM
+    trust_penalty: 10
+
+  ORPHAN_CALCULATION:
+    severity: LOW
+    trust_penalty: 5
+
+  EXTERNAL_REFERENCE:
+    severity: HIGH
+    trust_penalty: 20
+
+  WHOLE_COLUMN_REFERENCE:
+    severity: MEDIUM
+    trust_penalty: 10
+    explanation: >
+      Formula references entire column(s), creating broad and implicit dependencies.
+
+  WHOLE_ROW_REFERENCE:
+    severity: MEDIUM
+    trust_penalty: 10
+    explanation: >
+      Formula references entire row(s), reducing determinism of impact analysis.
+
+# Data Extraction Rules Configuration
+# This file defines rules for parsing and extracting data from spreadsheets
+
+# Keywords that identify summary/total sheets in the workbook
+summary_sheet_keywords:
+  - "summary"
+  - "total"
+  - "overview"
+  - "dashboard"
+  - "consolidated"
+  - "main"
+
+# Keywords that identify input/data entry sheets
+input_sheet_keywords:
+  - "data"
+  - "input"
+  - "detail"
+  - "transaction"
+  - "raw"
+  - "source"
+
+# Maximum row boundary for the summary data region (0-indexed or 1-indexed as needed)
+summary_region_max_row: 100
+
+# Maximum column boundary for the summary data region (0-indexed or 1-indexed as needed)
+summary_region_max_col: 50
+
+# Number of rows from the top to exclude from header scanning
+# Useful for skipping title rows, logos, etc.
+header_exclusion_row_limit: 3
+
+# Number of columns from the left to exclude from header scanning
+# Useful for skipping index columns, row headers, etc.
+header_exclusion_col_limit: 1
+
+# Maximum character length for header text
+# Headers longer than this may be considered notes or descriptions rather than column headers
+max_header_text_len: 50
+
+# Additional Notes:
+# - All numerical values are inclusive unless specified otherwise
+# - Row and column indices can be adjusted based on your indexing system (0-based or 1-based)
+# - Keyword matching is typically case-insensitive
+# - Consider adding sheet name pattern matching (regex) for more complex scenarios
+
+app:
+  trial:
+    enabled_default: false
+    formula_limit: 100
+
+  detectors:
+    # Step 2A: embedded constants detector
+    hardcoded_constants:
+      enabled: true
+      # Maximum number of constant findings to store/render in the report.
+      # (Counts still reflect total hits.)
+      max_findings: 100
+
+      # Literal values that are usually structural (not business assumptions).
+      # Keep this list in config so you can tune false positives without code changes.
+      ignore_literals:
+        - 0
+        - 1
+        - 2
+        - 10
+        - 12
+        - 100
+        - 1000
+
+      # If a constant is inside one of these functions, suppress it (usually formatting/structure).
+      # Note: function matching is best-effort and case-insensitive.
+      ignore_functions:
+        - SUM
+        - ROUND
+        - MIN
+        - MAX
+        - ABS
+        - INT
+        - MOD
+
+      # Operators that increase likelihood the constant is a business assumption.
+      risky_operators:
+        - "*"
+        - "/"
+
+      # Flag numeric arguments to these financial functions (often assumptions like rates).
+      risky_functions:
+        - NPV
+        - XNPV
+        - IRR
+        - XIRR
+        - RATE
+        - PV
+        - FV
+
+    # Step 2B: orphan calculations detector
+    orphan_calculations:
+      enabled: true
+      # Reduce false positives by excluding known output/presentation sheets.
+      exclude_sheets:
+        #- Summary
+        #- Output
+        #- Dashboard
+        #- Report
+        - Financials
+
+      # If a formula cell is itself part of a defined name destination, ignore it.
+      exclude_named_ranges: true
+
+      # Ignore formulas on the terminal row or column of each worksheet (often totals/outputs).
+      # (Your code can treat this as: last row OR last column)
+      exclude_last_row_or_col: true
+      exclude_last_row: true
+      exclude_last_column: true
+
+      # Max orphan findings to store/render (count still reflects total hits).
+      max_findings: 200
+
+  reporting:
+    risk_scoring:
+      # Step 3 (Option A): show LOW/MEDIUM/HIGH + reasons only (no numeric scores).
+      #
+      # The engine supports two modes:
+      # 1) Weighted scoring (recommended): provide thresholds + weights below.
+      # 2) Boolean fallback (backward-compatible): uses the *_make_* toggles.
+      #
+      # If thresholds/weights are missing, SheetGuard falls back to the boolean toggles.
+      overrides:
+        # Industry-standard: any circular dependency immediately escalates to HIGH.
+        cycle_always_high: true
+
+      sheet:
+        # Weighted scoring (recommended)
+        thresholds:
+          # Score >= high  => HIGH
+          # Score >= medium => MEDIUM
+          high: 50
+          # Conservative default: a single meaningful signal should surface as MEDIUM.
+          medium: 0.5
+        weights:
+          cycles: 50
+          top_risk_cells: 3
+          volatile_hits: 8
+          hardcoded_constants: 12
+          orphan_formulas: 5
+          # symbolic references can be large; applied per 100 refs.
+          symbolic_refs_per_100: 4
+
+        # Boolean fallback (legacy)
+        cycles_make_high: true
+        top_risk_counts_as_medium: true
+        volatile_counts_as_medium: true
+        symbolic_counts_as_medium: true
+        constants_counts_as_medium: true
+
+      workbook:
+        # Weighted scoring (recommended)
+        thresholds:
+          high: 80
+          # Conservative default: show MEDIUM when any meaningful signal exists (unless overridden to HIGH).
+          medium: 0.5
+        weights:
+          cycles: 80
+          top_risk_cells: 3
+          volatile_hits: 10
+          hardcoded_constants: 15
+          orphan_formulas: 5
+          symbolic_refs_per_100: 5
+
+        # Boolean fallback (legacy)
+        cycles_make_high: true
+        top_risks_make_high: true
+        volatile_makes_medium: true
+        symbolic_makes_medium: true
+        constants_makes_medium: true
