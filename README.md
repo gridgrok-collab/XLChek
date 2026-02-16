@@ -5,13 +5,13 @@ Offline Excel Structural Risk Diagnostics
 What XLChek Does
 
 XLChek is an offline, read-only Excel analysis tool that identifies structural risks in spreadsheets.
-Excel audit
-Excel risk analysis
-Spreadsheet diagnostics
-Circular reference detection
-Excel formula analyzer
-Financial model audit
-Offline Excel analyzer
+Excel audit.
+Excel risk analysis.
+Spreadsheet diagnostics.
+Circular reference detection.
+Excel formula analyzer.
+Financial model audit.
+Offline Excel analyzer.
 
 It detects:
  	Circular references
