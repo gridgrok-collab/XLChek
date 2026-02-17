@@ -1,144 +1,135 @@
 XLChek v0.1.0
-
 Offline Excel Structural Risk Diagnostics
+
+XLChek is an open-source, offline Excel formula analyzer and spreadsheet risk analysis tool that identifies structural risks in Excel workbooks.
+
+It performs read-only Excel audits and generates a detailed HTML diagnostic report.
+
+Designed for:
+
+Financial model auditing
+
+Spreadsheet risk diagnostics
+
+Circular reference detection
+
+Excel formula dependency analysis
+
+Structural model validation
 
 What XLChek Does
 
-XLChek is an offline, read-only Excel analysis tool that identifies structural risks in spreadsheets.
-Excel audit.
-Excel risk analysis.
-Spreadsheet diagnostics.
-Circular reference detection.
-Excel formula analyzer.
-Financial model audit.
-Offline Excel analyzer.
+XLChek analyzes Excel workbooks for structural and dependency risks.
 
 It detects:
- 	Circular references
- 	Hard-coded constants
- 	Volatile functions
- 	Orphan calculations
- 	Formula drift
- 	Whole column/row references
- 	External references
 
-XLChek does NOT validate business logic correctness.
+Circular references
 
-Tested: Python 3.12.7
+Hard-coded constants in formulas
 
-Not yet tested: Python 3.13+
+Volatile Excel functions
 
+Orphan calculations
 
+Formula drift across ranges
 
-It evaluates structural and dependency risk.
+Whole column / whole row references
 
+External workbook references
 
+XLChek does not validate business logic correctness.
+It evaluates structural and dependency risk only.
 
-Key Characteristics:
+Key Characteristics
 
- 	100% offline
+100% offline
 
- 	No internet required
+No internet required
 
- 	No telemetry
+No telemetry
 
- 	No data upload
+No data upload
 
- 	Read-only analysis
+Read-only analysis
 
- 	Generates HTML diagnostic report
+Generates HTML diagnostic report
 
+Generates structured JSON output
 
-
-Requirements:
-
- 	Supported Python 3.10 – 3.12
-
- 	Windows / macOS / Linux
-
-
-
-See requirements.txt
-
- 	Install dependencies:
-
- 	pip install -r requirements.txt
-
- 	Run:
-
- 	python -m sheetguard
-
-
-
-Output:
+Output
 
 XLChek generates:
 
- 	HTML risk report
+HTML risk report
 
- 	JSON structured output
+JSON structured output
 
- 	The report explains risk levels at:
+The report explains risk levels at:
 
- 	Workbook level
+Workbook level
 
- 	Sheet level
+Sheet level
 
- 	Formula level
+Formula level
 
+Requirements
 
+Python 3.10 – 3.12
 
-Quick Start (For Non-Technical Users):
+Windows / macOS / Linux
 
+Tested on:
 
+Python 3.12.7
 
- 	1. Install Python 3.12 (Supported version: Python 3.10 – 3.12)
+Not yet tested on:
 
- 	2. Install dependencies:
+Python 3.13+
 
+See requirements.txt for dependencies.
 
+Installation
 
- 	pip install -r requirements.txt
+Install dependencies:
 
-
-
- 	3. Run:
-
- 	python -m sheetguard
-
-
-
- 	4. Browse to Excel file.
-
- 	5. Click “Run Analysis”.
-
- 	6. HTML report opens automatically.
+pip install -r requirements.txt
 
 
+Run:
 
-License:
+python -m sheetguard
 
- 	This project is licensed under the MIT License.
+Quick Start (Non-Technical Users)
 
- 	See LICENSE file for details.
+Install Python 3.12 (Supported: 3.10–3.12)
+
+Install dependencies
+
+Run:
+
+python -m sheetguard
 
 
+Browse to your Excel file
 
-Disclaimer:
+Click Run Analysis
 
-XLChek is provided "as is" without warranty of any kind.
+HTML report opens automatically
+
+License
+
+This project is licensed under the MIT License.
+See LICENSE file for details.
+
+Disclaimer
+
+XLChek is provided “as is” without warranty of any kind.
 
 Users are responsible for validating their own financial and operational models.
 
+Version
 
-
-Version:
-
-
-
- 	v0.1.0 — Initial Public Release
-
-
+v0.1.0 — Initial Public Release
 
 Contact: gridgrok.contact@gmail.com
 
